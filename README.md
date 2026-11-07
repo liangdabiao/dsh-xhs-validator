@@ -43,6 +43,13 @@ npm install && npm test && npm run selftest && npm run build
 - `npm run selftest`：快照+泄露扫描+客户端+面板 API
 - `npm run build`：打包 dist/client.js + 三大自检
 
+
+## 安装
+
+```bash
+dsh plugin --profile web add dsh-xhs-validator
+```
+
 ## 许可
 
 MIT（liangdabiao）
