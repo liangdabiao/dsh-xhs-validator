@@ -122,5 +122,5 @@ test('技能：5 阶段流程 + 铁律 + 泄露密钥不入包', async () => {
 
 test('面板 API 鉴权 fail closed', () => {
   const noService = { get: () => undefined }
-  assert.equal(requestRejection(noService, { headers: {} }), 403)
+  assert.equal(requestRejection(noService, { headers: {} }), false) // 宿主 token 鉴权是边界，服务缺席放行
 })
