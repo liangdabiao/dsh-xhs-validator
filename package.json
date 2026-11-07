@@ -1,0 +1,60 @@
+{
+  "name": "dsh-xhs-validator",
+  "version": "0.1.0",
+  "description": "小红书商业创意验证：5 阶段方法论（关键词/抓取/痛点/竞争/报告）+ TikHub API 工具（真实笔记与评论数据）。token 走 Configuration。",
+  "license": "MIT",
+  "type": "module",
+  "main": "src/host.js",
+  "exports": {
+    ".": "./src/host.js",
+    "./client": "./dist/client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./locale/*.json": "./locale/*.json",
+    "./package.json": "./package.json"
+  },
+  "icon": "./icon.svg",
+  "files": [
+    "src",
+    "dist",
+    "lib",
+    "skills",
+    "locale/*.json",
+    "cordis.patch.yml",
+    "icon.svg",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "xhs",
+    "business",
+    "validation"
+  ],
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0",
+    "dsh": ">=0.2.1-rc.2 <0.3.0"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": []
+    }
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.10"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node test/lib.test.mjs",
+    "selftest": "node scripts/selftest.mjs",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "@deepseek-ai/schemastery": "^3.18.0"
+  }
+}

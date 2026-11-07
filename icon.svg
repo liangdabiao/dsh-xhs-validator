@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none">
+  <rect x="2.5" y="2.5" width="19" height="19" rx="5" fill="#c9302c"/>
+  <text x="12" y="12.5" font-size="7" font-weight="bold" fill="#fff" text-anchor="middle">红书</text>
+  <path d="M7 17h10" stroke="#ffd24a" stroke-width="1.4" stroke-linecap="round"/>
+</svg>

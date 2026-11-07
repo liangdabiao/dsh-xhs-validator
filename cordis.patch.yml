@@ -1,0 +1,5 @@
+# 小红书商业验证：技能 + TikHub 工具 + 硬规则注入。
+# 浏览器半边由 dsh.client 声明加载。
+- insert:
+    - id: xhs-validator
+      name: 'dsh-xhs-validator'
