@@ -73,7 +73,7 @@ test('401/403：给可读的认证错误', async () => {
 })
 
 test('未配置 token：报配置指引而不是裸错误', async () => {
-  await assert.rejects(() => searchNotes({}, 'kw', { fetchImpl: async () => { throw new Error('不应发起') } }), /Configuration.*tikhubToken/)
+  await assert.rejects(() => searchNotes({}, 'kw', { fetchImpl: async () => { throw new Error('不应发起') } }), /⚙️ 设置|tikhubToken/)
 })
 
 test('getNoteComments：解析 data.data.comments', async () => {

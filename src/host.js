@@ -8,6 +8,7 @@ import { homedir } from 'node:os'
 import { createSkillProvider } from '../lib/skills.js'
 import { searchNotes, getNoteComments, engagementScore, TikHubError } from '../lib/tikhub.js'
 import { registerApi } from '../lib/api.js'
+import { resolveToken, maskSettings, saveSettings, clearSettings } from '../lib/settings.js'
 
 export const name = 'xhs-validator'
 
@@ -50,7 +51,7 @@ export const xhsSearchTool = {
   name: 'xhs_search',
   description:
     '搜索小红书笔记（TikHub API）。商业验证流程的数据采集工具：按关键词搜索笔记，返回标题/互动量/作者等，按互动评分排序。' +
-    '配合 xhs-business-validator 技能的 5 阶段流程使用。需在 Configuration 填入 tikhubToken。',
+    '配合 xhs-business-validator 技能的 5 阶段流程使用。token 在面板「⚙️ 设置」里配置。',
   parameters: {
     type: 'object', additionalProperties: false, required: ['keyword'],
     properties: {
@@ -63,7 +64,7 @@ export const xhsSearchTool = {
   timeoutMs: 60_000,
   output: OUTPUT,
   async execute(args) {
-    const rt = configRef.rt
+    const rt = { ...configRef.rt, tikhubToken: resolveToken(configRef.config) || configRef.rt.tikhubToken }
     try {
       const notes = await searchNotes(rt, args.keyword, { page: args.page || 1, sort: args.sort || 'general' })
       if (notes.length === 0) {
@@ -95,7 +96,7 @@ export const xhsCommentsTool = {
   timeoutMs: 60_000,
   output: OUTPUT,
   async execute(args) {
-    const rt = configRef.rt
+    const rt = { ...configRef.rt, tikhubToken: resolveToken(configRef.config) || configRef.rt.tikhubToken }
     try {
       const comments = await getNoteComments(rt, args.note_id)
       if (comments.length === 0) {

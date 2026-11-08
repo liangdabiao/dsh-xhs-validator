@@ -59,15 +59,62 @@ function GuideTab() {
       h('div', { style: styles.muted }, '本框架输出分析，不构成商业决策依据。数据来自小红书公开内容，请遵守平台规则。')))
 }
 
+
+// ---------- 设置：面板内直配 TikHub token（存本机，永不上传/回显明文） ----------
+function SettingsTab() {
+  const [info, setInfo] = useState(null)
+  const [token, setToken] = useState('')
+  const [msg, setMsg] = useState('')
+  const [error, setError] = useState('')
+  useEffect(() => {
+    fetchJson('/api/config').then(setInfo).catch((e) => setError(e.message))
+  }, [])
+  const save = async () => {
+    setError(''); setMsg('')
+    if (!token.trim()) { setError('先粘贴 TikHub token。'); return }
+    try {
+      const d = await fetch(BASE + '/api/config', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ tikhubToken: token.trim() }) }).then(r => r.json())
+      if (d.error) throw new Error(d.error)
+      setInfo(d.credentials); setToken('')
+      setMsg('已保存（存本机 $DSH_HOME/xhs-validator/settings.json，不会上传）。')
+    } catch (e) { setError(e.message) }
+  }
+  const clear = async () => {
+    setError(''); setMsg('')
+    try {
+      const d = await fetch(BASE + '/api/config', { method: 'DELETE' }).then(r => r.json())
+      if (d.error) throw new Error(d.error)
+      setInfo(d.credentials); setMsg('已清除本机保存的 token。')
+    } catch (e) { setError(e.message) }
+  }
+  return h('div', null,
+    h('div', { style: styles.card },
+      h('div', { style: styles.sectionTitle }, '⚙️ TikHub token'),
+      info === null ? h('div', { style: styles.muted }, '加载中…')
+        : h('div', { style: styles.muted },
+            info.configured ? `已配置 ✓（${info.tokenMasked}）` : '未配置。粘贴并保存后即可真实搜索小红书数据。'),
+      h('input', { type: 'password', placeholder: 'TikHub token', value: token, onChange: (e) => setToken(e.target.value), style: styles.input }),
+      h('div', { style: styles.row },
+        h('button', { style: styles.button, onClick: save }, '保存'),
+        info?.configured ? h('button', { style: styles.tab, onClick: clear }, '清除已存') : null),
+      msg ? h('div', { style: styles.ok }, msg) : null,
+      error ? h('div', { style: styles.error }, error) : null,
+      h('div', { style: { ...styles.muted, fontSize: 12, lineHeight: 1.8 } },
+        '获取：www.tikhub.io 注册 → 用户中心 API Token。密钥只存本机，任何接口不回显明文。')))
+}
+
 function Panel() {
   const [tab, setTab] = useState('guide')
   return h('div', { style: styles.wrap },
     h('div', { style: styles.row },
-      h('button', { style: styles.tabActive }, '📖 验证流程')),
-    h(GuideTab))
+      h('button', { className: tab === 'guide' ? 'a' : '', style: tab === 'guide' ? styles.tabActive : styles.tab, onClick: () => setTab('guide') }, '📖 验证流程'),
+      h('button', { style: tab === 'settings' ? styles.tabActive : styles.tab, onClick: () => setTab('settings') }, '⚙️ 设置')),
+    tab === 'guide' ? h(GuideTab) : h(SettingsTab))
 }
 
 const styles = {
+  ok: { color: '#1a7f37', marginTop: 6 },
+  tab: { padding: '8px 16px', border: '1px solid #d9d9de', borderRadius: 8, background: '#fff', color: '#1a1a1a', cursor: 'pointer', fontSize: 13 },
   wrap: { padding: 16, overflow: 'auto', height: '100%', boxSizing: 'border-box', fontFamily: '-apple-system, "Segoe UI", "Microsoft YaHei", sans-serif', fontSize: 13, color: '#1a1a1a' },
   row: { display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginBottom: 10 },
   button: { padding: '6px 14px', border: 'none', borderRadius: 8, background: '#c9302c', color: '#fff', cursor: 'pointer', fontSize: 13 },
