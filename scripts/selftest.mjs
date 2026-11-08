@@ -70,7 +70,8 @@ await step('未配置 token 报配置指引', async () => {
     await searchNotes({}, 'kw', { fetchImpl: async () => { throw new Error('不应发起') } })
     throw new Error('不应成功')
   } catch (err) {
-    if (!err.message.includes('Configuration')) throw new Error(`错误信息不明确：${err.message}`)
+    if (!err.message.includes('⚙️ 设置')) throw new Error(`错误信息不明确：${err.message}`)
+    if (/网络/.test(err.message)) throw new Error(`配置缺失被当成网络错误：${err.message}`)
   }
 })
 

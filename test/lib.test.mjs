@@ -69,11 +69,21 @@ test('429 限流：按 Retry-After 等待后重试', async () => {
 
 test('401/403：给可读的认证错误', async () => {
   const impl = async () => ({ ok: false, status: 401, headers: { get: () => '1' }, text: async () => 'unauthorized' })
-  await assert.rejects(() => searchNotes(CONFIG, 'kw', { fetchImpl: impl }), /认证失败.*tikhubToken/)
+  await assert.rejects(() => searchNotes(CONFIG, 'kw', { fetchImpl: impl }), /认证失败.*(⚙️ 设置|token)/)
 })
 
-test('未配置 token：报配置指引而不是裸错误', async () => {
-  await assert.rejects(() => searchNotes({}, 'kw', { fetchImpl: async () => { throw new Error('不应发起') } }), /⚙️ 设置|tikhubToken/)
+test('未配置 token：立即报配置指引，不当成网络错误、不发请求', async () => {
+  let called = false
+  let message = ''
+  try {
+    await searchNotes({}, 'kw', { fetchImpl: async () => { called = true; throw new Error('不应发起') } })
+    assert.fail('缺 token 时不应成功')
+  } catch (err) {
+    message = err.message
+  }
+  assert.equal(called, false, '缺 token 时不应发起任何请求')
+  assert.match(message, /⚙️ 设置/, '应指向面板设置入口')
+  assert.ok(!/网络/.test(message), `配置错误不该被包成网络错误：${message}`)
 })
 
 test('getNoteComments：解析 data.data.comments', async () => {
@@ -124,3 +134,4 @@ test('面板 API 鉴权 fail closed', () => {
   const noService = { get: () => undefined }
   assert.equal(requestRejection(noService, { headers: {} }), false) // 宿主 token 鉴权是边界，服务缺席放行
 })
+
