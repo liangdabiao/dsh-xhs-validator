@@ -1,7 +1,12 @@
 // 离线自检：工具 + 技能 + 泄露密钥扫描 + 面板 API。零真实网络（TikHub 用注入 fetch 测试）。
-import { existsSync, readFileSync, readdirSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, mkdtempSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
+
+// 关键：用临时 DSH_HOME，避免读到本机真实保存的 TikHub token
+// （否则「未配置 token」和 health.tikhub===false 这两步会随用户环境飘）
+process.env.DSH_HOME = mkdtempSync(join(tmpdir(), 'xhs-selftest-'))
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const { searchNotes } = await import('../lib/tikhub.js')
