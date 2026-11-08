@@ -47,9 +47,10 @@ npm install && npm test && npm run selftest && npm run build
 ## 安装
 
 ```bash
-dsh plugin --profile web add dsh-xhs-validator
+dsh plugin --profile web add github:liangdabiao/dsh-xhs-validator
 ```
 
 ## 许可
 
 MIT（liangdabiao）
+

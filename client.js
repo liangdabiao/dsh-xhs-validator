@@ -8,6 +8,12 @@ const { useState, useEffect } = require('react')
 const PANEL_ID = 'xhs-validator'
 const BASE = 'xhs-validator'
 
+// 「马上使用」：开新对话并把调研指令填进输入框（不直接发送，用户补上主题再回车）。
+// 走 Host 的 uiWorkspace.startSession，与「运营 Agent」「卖家工具箱」同一套入口：
+//   startSession(sessionId?, { prompt, whenDraftExists: 'keep'|'replace'|'append' })
+const USE_PROMPT = '使用‘小红书验证’插件 进行调研：'
+let openInChat = null
+
 function PanelIcon(props) {
   return h('svg', { width: 24, height: 24, viewBox: '0 0 24 24', fill: 'none', ...props },
     h('rect', { x: 2.5, y: 2.5, width: 19, height: 19, rx: 5, fill: '#c9302c' }),
@@ -105,7 +111,14 @@ function SettingsTab() {
 
 function Panel() {
   const [tab, setTab] = useState('guide')
+  const use = () => { if (openInChat) openInChat(USE_PROMPT) }
   return h('div', { style: styles.wrap },
+    // 一键入口：开新对话并填好调研指令
+    h('div', { style: styles.ctaCard },
+      h('div', { style: styles.ctaText },
+        h('div', { style: styles.ctaTitle }, '想验证一个商业创意？'),
+        h('div', { style: styles.muted }, '点「马上使用」→ 开新对话，输入框已填好指令，补上你的主题（如：在深圳开自习室）回车即可。')),
+      h('button', { style: styles.ctaButton, onClick: use, title: `填进对话：${USE_PROMPT}` }, '🚀 马上使用')),
     h('div', { style: styles.row },
       h('button', { className: tab === 'guide' ? 'a' : '', style: tab === 'guide' ? styles.tabActive : styles.tab, onClick: () => setTab('guide') }, '📖 验证流程'),
       h('button', { style: tab === 'settings' ? styles.tabActive : styles.tab, onClick: () => setTab('settings') }, '⚙️ 设置')),
@@ -114,6 +127,10 @@ function Panel() {
 
 const styles = {
   ok: { color: '#1a7f37', marginTop: 6 },
+  ctaCard: { display: 'flex', gap: 12, alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', background: '#fdf4f3', border: '1px solid #f0d0cc', borderRadius: 10, padding: '12px 14px', marginBottom: 12 },
+  ctaText: { flex: 1, minWidth: 200 },
+  ctaTitle: { fontWeight: 700, color: '#7a1f15', marginBottom: 4 },
+  ctaButton: { padding: '10px 20px', border: 'none', borderRadius: 10, background: '#c9302c', color: '#fff', cursor: 'pointer', fontSize: 14, fontWeight: 700, boxShadow: '0 2px 6px rgba(201,48,44,.25)' },
   tab: { padding: '8px 16px', border: '1px solid #d9d9de', borderRadius: 8, background: '#fff', color: '#1a1a1a', cursor: 'pointer', fontSize: 13 },
   wrap: { padding: 16, overflow: 'auto', height: '100%', boxSizing: 'border-box', fontFamily: '-apple-system, "Segoe UI", "Microsoft YaHei", sans-serif', fontSize: 13, color: '#1a1a1a' },
   row: { display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginBottom: 10 },
@@ -131,6 +148,15 @@ const styles = {
 }
 
 function apply(ctx) {
+  // 一键入口：开新对话并预填「使用‘小红书验证’插件 进行调研：」（不直接发送）
+  openInChat = (prompt) => {
+    try {
+      ctx.uiWorkspace.startSession(undefined, { prompt, whenDraftExists: 'replace' })
+    } catch (err) {
+      console.error('[xhs-validator] 开新对话失败', err)
+      alert('开新对话失败：' + ((err && err.message) || err))
+    }
+  }
   ctx.slots.inject('sidebar.panellist', () =>
     ctx.slots.register({ name: 'sidebar.panellist', id: PANEL_ID, order: 17, label: () => '小红书验证' }, PanelIcon))
   ctx.slots.inject('main', () =>
@@ -138,5 +164,5 @@ function apply(ctx) {
 }
 
 exports.isPlugin = true
-exports.inject = ['slots']
+exports.inject = ['slots', 'uiWorkspace']
 exports.apply = apply
