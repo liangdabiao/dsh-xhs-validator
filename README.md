@@ -4,8 +4,7 @@ DeepSeek Harness（dsh）插件：**小红书商业创意验证**——5 阶段�
 
 方法论来自 [XHS_Business_Idea_Validator](https://github.com/liangdabiao/XHS_Business_Idea_Validator)（liangdabiao）。
 
-
-<img width="1614" height="1215" alt="image" src="https://github.com/user-attachments/assets/a7b920ba-6744-4dca-9abb-83706549470c" />
+ <img width="1490" height="1140" alt="image" src="https://github.com/user-attachments/assets/dd670d1e-38c8-4443-bb82-4b59f41ffa41" />
 
 ## 装上以后有什么
 
