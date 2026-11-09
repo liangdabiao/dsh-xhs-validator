@@ -1,6 +1,6 @@
 {
   "name": "dsh-xhs-validator",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "小红书商业创意验证：5 阶段方法论（关键词/抓取/痛点/竞争/报告）+ TikHub API 工具（真实笔记与评论数据）。token 走 Configuration。",
   "license": "MIT",
   "type": "module",
